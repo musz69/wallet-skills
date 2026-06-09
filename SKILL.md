@@ -1417,6 +1417,8 @@ The fetch endpoint handles the entire payment flow automatically:
 4. Retries the request with the payment header
 5. Returns the final API response with `payment_made` and `payment_details`
 
+Both x402 schemes are supported: `exact` (fixed price) and `upto` (usage-metered — the wallet authorizes a maximum, the server settles only actual usage, e.g. per LLM token). For `upto`, `payment_details` reports the settled `amount` plus the authorized `max_amount`. `upto` is EVM-only and pays through Permit2, so the wallet needs a one-time USDC Permit2 approval: if the response is an `allowance_required` error, call the `setup_x402_permit2` MCP tool (or retry after approving USDC for Permit2) on the indicated chain, wait for confirmation, then retry.
+
 #### Fetching an OpenAPI spec when you need it
 
 If the `parameters` / `instructions` from step 2 are not enough to build the request body, fall back to the service `docsUrl` returned by `GET /api/discover/{serviceId}` or the provider's official API docs.
